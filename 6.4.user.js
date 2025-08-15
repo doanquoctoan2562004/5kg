@@ -25,10 +25,6 @@
 // @connect      enzymevietnam.com
 // @connect      bamivapharma.com
 // @run-at       document-end
-// @updateURL    https://github.com/doanquoctoan2562004/5kg/raw/refs/heads/main/LaymanetBypassTool-6.4.user.js
-// @downloadURL  https://github.com/doanquoctoan2562004/5kg/raw/refs/heads/main/LaymanetBypassTool-6.4.user.js
-// @supportURL   https://github.com/doanquoctoan2562004/5kg/issues
-// @homepageURL  https://github.com/doanquoctoan2562004/5kg
 // ==/UserScript==
 
 (function() {
