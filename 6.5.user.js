@@ -31,42 +31,6 @@
     'use strict';
 
     const styles = `
-        @media (max-width: 768px) {
-            #overlay-tool {
-                width: 95vw !important;
-                max-width: 350px !important;
-                top: 10px !important;
-                right: 2.5vw !important;
-                left: 2.5vw !important;
-                font-size: 13px !important;
-            }
-            .tool-content { padding: 15px !important; }
-            .toggle-btn {
-                width: 45px !important;
-                height: 45px !important;
-                font-size: 16px !important;
-                top: 15px !important;
-                right: 15px !important;
-            }
-            .action-btn { font-size: 13px !important; padding: 10px 15px !important; }
-            .form-select, .form-input { padding: 8px !important; font-size: 13px !important; }
-            .checkbox-group { padding: 10px !important; }
-            .result-area { min-height: 80px !important; font-size: 11px !important; }
-        }
-
-        @media (max-width: 480px) {
-            #overlay-tool {
-                width: 98vw !important;
-                max-width: none !important;
-                left: 1vw !important;
-                right: 1vw !important;
-                top: 5px !important;
-            }
-            .tool-title { font-size: 14px !important; }
-            .button-group { flex-direction: column !important; }
-            .button-group .action-btn { width: 100% !important; margin-bottom: 5px !important; }
-        }
-
         #overlay-tool {
             position: fixed; top: 20px; right: 20px; width: 380px;
             background: rgba(20, 20, 30, 0.95); border: 1px solid #333;
@@ -196,77 +160,26 @@
             text-align: center !important;
         }
 
+        /* Notification Styles */
         .notification {
-            position: fixed !important;
-            top: 20px !important;
-            left: 20px !important;
-            z-index: 999999 !important;
-            background: rgba(20, 20, 30, 0.95) !important;
-            color: #fff !important;
-            padding: 12px 20px !important;
-            border-radius: 8px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 1px solid #333 !important;
-            font-family: Arial, sans-serif !important;
-            font-size: 14px !important;
-            font-weight: 500 !important;
-            min-width: 200px !important;
-            max-width: 400px !important;
-            word-wrap: break-word !important;
-            transform: translateX(-100%) !important;
-            opacity: 0 !important;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
-            pointer-events: auto !important;
+            position: fixed !important; top: 20px !important; left: 50% !important;
+            transform: translateX(-50%) !important; z-index: 999999 !important;
+            background: rgba(20,20,30,0.95) !important; color: #fff !important;
+            padding: 12px 20px !important; border-radius: 8px !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+            backdrop-filter: blur(10px) !important; border: 1px solid #333 !important;
+            font-family: Arial, sans-serif !important; font-size: 14px !important;
+            opacity: 0 !important; animation: slideDown 0.3s ease forwards !important;
         }
-
-        .notification.show {
-            transform: translateX(0) !important;
-            opacity: 1 !important;
+        .notification.success { border-left: 4px solid #10b981 !important; }
+        .notification.error { border-left: 4px solid #ef4444 !important; }
+        .notification.info { border-left: 4px solid #3b82f6 !important; }
+        .notification.warning { border-left: 4px solid #f59e0b !important; }
+        @keyframes slideDown {
+            to { opacity: 1 !important; transform: translateX(-50%) translateY(0) !important; }
         }
-
-        .notification.success {
-            border-left: 4px solid #10b981 !important;
-            background: rgba(16, 185, 129, 0.15) !important;
-        }
-
-        .notification.error {
-            border-left: 4px solid #ef4444 !important;
-            background: rgba(239, 68, 68, 0.15) !important;
-        }
-
-        .notification.info {
-            border-left: 4px solid #3b82f6 !important;
-            background: rgba(59, 130, 246, 0.15) !important;
-        }
-
-        .notification.warning {
-            border-left: 4px solid #f59e0b !important;
-            background: rgba(245, 158, 11, 0.15) !important;
-        }
-
-        @media (max-width: 768px) {
-            .notification {
-                left: 10px !important;
-                right: 10px !important;
-                max-width: calc(100vw - 20px) !important;
-                font-size: 13px !important;
-                padding: 10px 15px !important;
-                transform: translateY(-100%) !important;
-            }
-
-            .notification.show {
-                transform: translateY(0) !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .notification {
-                left: 5px !important;
-                right: 5px !important;
-                max-width: calc(100vw - 10px) !important;
-                font-size: 12px !important;
-            }
+        @keyframes slideUp {
+            to { opacity: 0 !important; transform: translateX(-50%) translateY(-20px) !important; }
         }
     `;
 
@@ -348,49 +261,20 @@
     let autoFillEnabled = false;
     let isAutoRunCheckActive = false;
     let currentCode = '';
-    let notificationQueue = [];
-    let isShowingNotification = false;
 
+    // Notification System
     function showNotification(message, type = 'info', duration = 3000) {
-        notificationQueue.push({ message, type, duration });
-        processNotificationQueue();
-    }
-
-    function processNotificationQueue() {
-        if (isShowingNotification || notificationQueue.length === 0) {
-            return;
-        }
-
-        isShowingNotification = true;
-        const { message, type, duration } = notificationQueue.shift();
-
-        document.querySelectorAll('.notification').forEach(notif => {
-            notif.remove();
-        });
+        // Remove existing notifications
+        document.querySelectorAll('.notification').forEach(notif => notif.remove());
 
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.textContent = message;
-
         document.body.appendChild(notification);
 
-        requestAnimationFrame(() => {
-            notification.classList.add('show');
-        });
-
         setTimeout(() => {
-            notification.classList.remove('show');
-
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-                isShowingNotification = false;
-
-                if (notificationQueue.length > 0) {
-                    setTimeout(() => processNotificationQueue(), 100);
-                }
-            }, 400);
+            notification.style.animation = 'slideUp 0.3s ease forwards';
+            setTimeout(() => notification.remove(), 300);
         }, duration);
     }
 
@@ -455,6 +339,7 @@
     function updateResult(text, showInResult = false) {
         if (showInResult) {
             resultArea.textContent = text;
+            // Enable copy button if this looks like a code
             if (text && text.length > 5 && !text.includes('Sẵn sàng') && !text.includes('Đang') && !text.includes('Lỗi')) {
                 currentCode = text;
                 copyBtn.disabled = false;
@@ -697,10 +582,9 @@
     <div class="container">
         <h1 class="title">Xác Thực Bảo Mật</h1>
         <div class="info">
-            📖 <strong>Hướng dẫn sử dụng:</strong><br><br>
-                    1️⃣ Hoàn thành xác thực hCaptcha<br>
-                    2️⃣ Click "Tiếp tục với token" để tiếp tục bypass<br><br>
-                    💡 <em>Popup sẽ tự động đóng sau khi hoàn thành</em>
+            🌐 Domain: ${targetHost}<br>
+            🔑 Sitekey: ${sitekey}<br>
+            📍 Phương thức: Ngữ Cảnh Cửa Sổ Popup
         </div>
         <div id="hcaptcha-container" class="hcaptcha-container">
             <div class="status">Đang khởi tạo hCaptcha...</div>
@@ -1110,6 +994,7 @@
             showNotification('Đã điền mã: ' + code, 'success');
             await new Promise(res => setTimeout(res, 300));
 
+            // Handle reCaptcha
             const recaptchaFrame = document.querySelector('iframe[src*="recaptcha"]') ||
                                   document.querySelector('div.g-recaptcha iframe') ||
                                   document.querySelector('.rc-anchor-container') ||
@@ -1144,6 +1029,7 @@
 
             await new Promise(res => setTimeout(res, 300));
 
+            // Find and click submit button
             const submitButton = document.querySelector('#btn-xac-nhan') ||
                                document.querySelector('button[type="submit"]') ||
                                document.querySelector('.btn-submit') ||
@@ -1175,6 +1061,7 @@
         showNotification(`Đang xử lý ${eurl} trên ${platform}...`, 'info');
 
         try {
+            // Step 1: Traffic request
             showNotification('Đang gửi yêu cầu traffic...', 'info');
             const trafficResponse = await makeRequest({
                 method: 'GET',
@@ -1187,6 +1074,7 @@
                 }
             });
 
+            // Step 2: Get campaign data
             showNotification('Đang lấy dữ liệu campaign...', 'info');
             const campaignResponse = await makeRequest({
                 method: 'GET',
@@ -1206,9 +1094,11 @@
                 throw new Error("Không thể lấy ID campaign từ máy chủ");
             }
 
+            // Step 3: Handle hCaptcha
             showNotification('Đang mở popup hCaptcha...', 'info');
             const hCaptchaToken = await showHCaptchaModal(campaignData, config);
 
+            // Step 4: Get bypass code
             showNotification('Đang tạo mã bypass...', 'info');
             const visitorInfo = generateVisitorInfo();
             const codePayload = {
@@ -1288,6 +1178,7 @@
         }
     }
 
+    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'B') {
             e.preventDefault();
@@ -1358,7 +1249,7 @@
             }, 2000);
         }
 
-        showNotification('Tool Bypass Laymanet v6.5đã sẵn sàng!', 'success');
+        showNotification('Tool Bypass Laymanet v6.5 đã sẵn sàng!', 'success');
     }
 
     window.addEventListener('beforeunload', () => {
@@ -1367,6 +1258,7 @@
         }
     });
 
+    // Enhanced toggle auto run function
     const originalToggleAutoRun = toggleAutoRun;
     toggleAutoRun = function() {
         const wasEnabled = autoRunEnabled;
@@ -1390,6 +1282,7 @@
         }
     };
 
+    // Initialize the script
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(initialize, 100);
