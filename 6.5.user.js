@@ -583,8 +583,10 @@
         <h1 class="title">Xác Thực Bảo Mật</h1>
         <div class="info">
             🌐 Domain: ${targetHost}<br>
-            🔑 Sitekey: ${sitekey}<br>
-            📍 Phương thức: Ngữ Cảnh Cửa Sổ Popup
+             📖 <strong>Hướng dẫn sử dụng:</strong><br><br>
+                    1️⃣ Hoàn thành xác thực hCaptcha<br>
+                    2️⃣ Click "Tiếp tục với token"<br><br>
+                    💡 <em>Đợi vài giây sẽ bypass thành công</em>
         </div>
         <div id="hcaptcha-container" class="hcaptcha-container">
             <div class="status">Đang khởi tạo hCaptcha...</div>
