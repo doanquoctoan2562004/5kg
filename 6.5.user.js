@@ -360,6 +360,9 @@
             for (const img of allImages) {
                 const src = img.getAttribute('src');
                 if (src) {
+                    if (src.includes('IMG_1570.jpeg')) {
+                        return 'yến';
+                    }
                     if (src.includes('IMG_1568.jpeg')) {
                         return 'yến';
                     }
@@ -370,6 +373,9 @@
                         return 'lu';
                     }
                     if (src.includes('ro.png')) {
+                        return 'ro';
+                    }
+                    if (src.includes('www.png')) {
                         return 'ro';
                     }
                     if (src.includes('st.png')) {
